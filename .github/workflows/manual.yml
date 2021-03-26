@@ -28,12 +28,16 @@ jobs:
     steps:
     - name: Deploy to dev
       run: echo "deploy in dev using $MY_DEV_SECRET"
+      env:
+        MY_DEV_SECRET: ${{ secrets.MY_DEV_SECRET }}
 
   deploy-in-pro:
     runs-on: ubuntu-latest
     environment: pro
-    needs: [build, deploy-in-dev]
+    needs: deploy-in-dev
     
     steps:
     - name: Deploy to pro
       run: echo "deploy in pro using $MY_PRO_SECRET"
+      env:
+        MY_PRO_SECRET: ${{ secrets.MY_PRO_SECRET }}
