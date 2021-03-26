@@ -6,25 +6,34 @@ name: Manual workflow
 # or API.
 on:
   workflow_dispatch:
-    # Inputs the workflow accepts.
-    inputs:
-      name:
-        # Friendly description to be shown in the UI instead of 'name'
-        description: 'Person to greet'
-        # Default value if no value is explicitly provided
-        default: 'World'
-        # Input has to be provided for the workflow to run
-        required: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "greet"
-  greet:
+  build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Runs a single command using the runners shell
-    - name: Send greeting
-      run: echo "Hello ${{ github.event.inputs.name }}"
+    - name: Build
+      run: echo "build..."
+  
+  deploy-in-dev:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: build
+
+    steps:
+    - name: Deploy to dev
+      run: echo "deploy in dev using $MY_DEV_SECRET"
+
+  deploy-in-pro:
+    runs-on: ubuntu-latest
+    environment: pro
+    needs: [build, deploy-in-dev]
+    
+    steps:
+    - name: Deploy to pro
+      run: echo "deploy in pro using $MY_PRO_SECRET"
